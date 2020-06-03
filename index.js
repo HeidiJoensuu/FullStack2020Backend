@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 app.use(cors())
+app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms  :data'))
 
@@ -32,10 +33,6 @@ let persons = [
   }
 ]
 
-app.get('/', (request, response) => {
-  response.send('<h1>Hello there!</h1>')
-})
-
 app.get('/api/persons', (request, response) => {
   response.json(persons)
 
@@ -45,7 +42,6 @@ app.get('/api/info', (request, response) => {
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p>
     <p>${new Date()}</p>`
-    
     )
 })
 
