@@ -1,4 +1,4 @@
-rewuire('dotenv').config()
+require('dotenv').config()
 const mongoose = require('mongoose')
 
 if (process.argv.length<3) {
@@ -22,12 +22,12 @@ if(process.argv.length>4){
     name: process.argv[3],
     number: process.argv[4],
   })
-  person.save().then(response => {
+  person.save().then(() => {
     console.log('Person saved!')
     mongoose.connection.close()
   })
 }
-
+/*
 Person.find({}).then(result => {
   console.log("phonebook:")
   result.forEach(person => {
@@ -35,3 +35,4 @@ Person.find({}).then(result => {
   })
   mongoose.connection.close()
 })
+*/

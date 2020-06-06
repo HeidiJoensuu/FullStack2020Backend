@@ -11,13 +11,14 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms  :data'))
 
-morgan.token('data', function (req, res) { return JSON.stringify(req.body) })
+morgan.token('data', function (req) { return JSON.stringify(req.body) })
 
 app.get('/api/persons', (request, response, next) => {
-  Person.find({}).then(persons =>{
-    response.json(persons)
-  })
-  .catch(error => next(error))
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/info', async (request, response, next) => {
@@ -26,24 +27,24 @@ app.get('/api/info', async (request, response, next) => {
   response.send(
     `<p>Phonebook has info for ${persons.length} people</p>
     <p>${new Date()}</p>`
-    )
+  )
 })
 
-app.get('/api/persons/:id', (reg, res) => {
+app.get('/api/persons/:id', (reg, res, next) => {
   Person.findById(reg.params.id)
-    .then(person =>{
+    .then(person => {
       if(person) {
         res.json(person)
       } else {
         reg.status(404).end()
-      }  
+      }
     })
     .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', async (reg, res, next) =>{
+app.delete('/api/persons/:id', async (reg, res, next) => {
   Person.findByIdAndRemove(reg.params.id)
-    .then(result => {
+    .then(() => {
       res.status(204).end()
     })
     .catch(error => next(error))
@@ -51,12 +52,12 @@ app.delete('/api/persons/:id', async (reg, res, next) =>{
 
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
-    const sPerson = new Person({
+  const sPerson = new Person({
     name: body.name,
     number: body.number,
-    })
-    console.log(sPerson)
-    sPerson.save()
+  })
+  console.log(sPerson)
+  sPerson.save()
     .then(savedPerson => {
       return savedPerson.toJSON()
     })
@@ -66,7 +67,7 @@ app.post('/api/persons', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, response, next) =>{
+app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   const person = {
     name: body.name,
@@ -74,10 +75,10 @@ app.put('/api/persons/:id', (request, response, next) =>{
   }
 
   Person.findByIdAndUpdate(request.params.id, person, { new: true })
-  .then(updatedPerson =>{
-    response.json(updatedPerson)
-  })
-  .catch(error => next(error))
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.use(middleware.unknownEndpoint)
